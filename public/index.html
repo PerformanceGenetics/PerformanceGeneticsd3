@@ -54,7 +54,7 @@ var svg = d3.select("body").append("svg")
     .attr("height", diameter)
   .append("g")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
-d3.json("http://localhost:3000/getdata", function(error, root) {
+d3.json("/getdata", function(error, root) {
   if (error) throw error;
   var nodes = tree.nodes(root),
       links = tree.links(nodes);

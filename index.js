@@ -3,7 +3,7 @@ var async = require('async');
 var _ = require("underscore");
 var express = require("express");
 var app = express();
-var PORT =3000;
+var PORT =process.env.PORT || 3000;
 // spreadsheet key is the long id in the sheets URL 
 var doc = new GoogleSpreadsheet('1OvqesdGFNMGAnQU12iVX-eq7g3cM_th4zvFhPN4ldvk');
 var sheet;

@@ -8,7 +8,7 @@
 
     .node circle {
         fill: #fff;
-        stroke: steelblue;
+        stroke: red;
         stroke-width: 1.5px;
     }
 
@@ -70,7 +70,7 @@
 
     function update(source) {
 
-        var spacing = 800/15;
+        var spacing = 100;
         // Compute the new tree layout.
         var nodes = tree.nodes(root).reverse(),
                 links = tree.links(nodes);
@@ -90,7 +90,7 @@
 
         nodeEnter.append("circle")
                 .attr("r", 1e-6)
-                .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+                .style("fill", function(d) { return d._children ? "red" : "#fff"; });
 
         nodeEnter.append("text")
                 .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
@@ -105,8 +105,8 @@
                 .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
         nodeUpdate.select("circle")
-                .attr("r", 4.5)
-                .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+                .attr("r", 10)
+                .style("fill", function(d) { return d._children ? "red" : "#fff"; });
 
         nodeUpdate.select("text")
                 .style("fill-opacity", 1);

@@ -46,28 +46,51 @@ var createTrees = function(json){
 
     return parent;
 }
-var getdata = function(req,res){
 
-    doc.getInfo(function(err, info) {
+var getSheetDataJSON = function(success) {
+    async.waterfall([function (cb) {
+        doc.getInfo(function (err, info) {
+            console.log("info", info);
+            cb(null, info);
+        })
+    }
+        ,
+        function (info, cb) {
+            var jsonData = []
+            var sheet = info.worksheets[0];
+            sheet.getRows(function (err, rows) {
 
-        var jsonData =[],sheet = info.worksheets[0];
+                _.each(rows, function (row) {
+                    jsonData.push(_.pick(row, props));
+                });
+                cb(null, jsonData);
 
-        sheet.getRows(function(err, rows ){
 
-            _.each(rows,function(row){
-                jsonData.push(_.pick(row,props));
             });
 
-            res.send(createTrees(jsonData));
+        }
+    ], function (err, result) {
+        success(result)
+    })
+}
 
-        });
+var getdata = function(req,res){
 
-    });
+
+   var jsonToTree = function(json){
+       res.send(createTrees(json))
+   };
+
+    getSheetDataJSON(jsonToTree);
 
 }
 var gethaplotype = function(req,res){
 
+    doc.getInfo(function(err, info) {
 
+        var jsonData = [], sheet = info.worksheets[0];
+
+    })
 
 }
 

@@ -6,17 +6,10 @@ var async = require('async');
 var _ = require("underscore");
 var GoogleSpreadsheet = require('google-spreadsheet');
 var doc = new GoogleSpreadsheet('1OvqesdGFNMGAnQU12iVX-eq7g3cM_th4zvFhPN4ldvk');
-var sheet;
+var sheet,sheetDataStore;
 var props = ["haplogroup","haplotype","lowe","color","childid","name","parentid"];
 
 
-async.series([
-    function setAuth(step) {
-        // see notes below for authentication instructions!
-        var creds = require('./auth.json');
-        doc.useServiceAccountAuth(creds, step);
-    }
-]);
 
 var groupRecursively = function(json,childid){
     var children,child;
@@ -50,7 +43,6 @@ var createTrees = function(json){
 var getSheetDataJSON = function(success) {
     async.waterfall([function (cb) {
         doc.getInfo(function (err, info) {
-            console.log("info", info);
             cb(null, info);
         })
     }
@@ -70,32 +62,56 @@ var getSheetDataJSON = function(success) {
 
         }
     ], function (err, result) {
+        console.log("data loaded");
         success(result)
     })
 }
 
 var getdata = function(req,res){
 
+    console.log("getdata");
 
-   var jsonToTree = function(json){
-       res.send(createTrees(json))
+   var storeJson = function(json){
+       sheetDataStore =json;
    };
 
-    getSheetDataJSON(jsonToTree);
+    getSheetDataJSON(storeJson);
 
 }
-var gethaplotype = function(req,res){
 
-    doc.getInfo(function(err, info) {
 
-        var jsonData = [], sheet = info.worksheets[0];
 
-    })
+var getCustomTree = function(req,res){
+    var haplogroup = req.params.group;
+
+
+    res.send(createTrees(_.filter(sheetDataStore,{"haplogroup":haplogroup})));
+
 
 }
+
+
+var gethaplogroups = function(req,res){
+
+      var haplogroup =  _.uniq(_.pluck(sheetDataStore,"haplogroup"));
+        res.send({haplogroup:haplogroup});
+
+
+}
+
+
+async.series([
+    function setAuth(step) {
+        // see notes below for authentication instructions!
+        var creds = require('./auth.json');
+        doc.useServiceAccountAuth(creds, step);
+    },
+    getdata
+]);
+
 
 
 module.exports = {
-    "getdata":getdata,
-    "gethaplotype":gethaplotype
+    "gettree":getCustomTree,
+    "gethaplogroups":gethaplogroups
 }

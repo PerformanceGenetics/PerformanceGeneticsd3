@@ -24,8 +24,26 @@
 
 </style>
 <body>
-<select id="haplotype"></select>
+Haplogroups : <select id="haplogroup"></select>
+<div id="tree">
+
+</div>
 <script src="https://d3js.org/d3.v3.min.js"></script>
+<script>
+
+    var dispatch = d3.dispatch("load", "statechange");
+
+    d3.json("/gethaplogroups", function(error, data) {
+        data.haplogroup.forEach(function(d){
+            d3.select("#haplogroup").append("option").text(d);
+        })
+        d3.select("#haplogroup").on('change',function(){
+            var sel = d3.select('#haplogroup').node()
+            var selected =sel.options[sel.selectedIndex].value;
+            getHaploGroupData(selected);
+        })
+    })
+</script>
 <script>
 
     var margin = {top: 20, right: 120, bottom: 20, left: 120},
@@ -42,16 +60,28 @@
     var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("#tree").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.json("/getdata", function(error, flare) {
-        if (error) throw error;
+    d3.select(self.frameElement).style("height", "800px");
 
-        root = flare;
+   function getHaploGroupData(hgrp){
+       d3.json("/gettree/"+hgrp, function(error, flare) {
+           if (error) throw error;
+           createTree(flare);
+
+       });
+   }
+
+
+
+
+    function createTree(source){
+
+        root = source;
         root.x0 = height / 2;
         root.y0 = 0;
 
@@ -65,10 +95,9 @@
 
         root.children.forEach(collapse);
         update(root);
-    });
+    }
 
 
-    d3.select(self.frameElement).style("height", "800px");
 
     function update(source) {
 

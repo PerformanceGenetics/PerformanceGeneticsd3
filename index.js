@@ -5,9 +5,9 @@ var engine = require("./engine");
 
 app.use(express.static("public"));
 
-app.get("/getdata", engine.getdata);
+app.get("/gettree/:group", engine.gettree);
 
-app.get("/gethaplotypes",engine.gethaplotype);
+app.get("/gethaplogroups",engine.gethaplogroups);
 
 
 app.listen(PORT,function(){

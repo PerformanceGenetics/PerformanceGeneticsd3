@@ -2,12 +2,19 @@
  * Created by abhishekrathore on 7/23/16.
  */
 
+
+module.exports = {
+    "gettree":getCustomTree,
+    "gethaplogroups":gethaplogroups
+}
+
 var async = require('async');
 var _ = require("underscore");
 var GoogleSpreadsheet = require('google-spreadsheet');
 var doc = new GoogleSpreadsheet('1OvqesdGFNMGAnQU12iVX-eq7g3cM_th4zvFhPN4ldvk');
 var sheet,sheetDataStore;
 var props = ["haplogroup","haplotype","lowe","color","childid","name","parentid"];
+
 
 
 
@@ -73,15 +80,16 @@ var getdata = function(req,res){
 
    var storeJson = function(json){
        sheetDataStore =json;
+       console.log(json);
    };
+
 
     getSheetDataJSON(storeJson);
 
 }
 
 
-
-var getCustomTree = function(req,res){
+function getCustomTree(req,res){
     var haplogroup = req.params.group;
 
 
@@ -90,8 +98,7 @@ var getCustomTree = function(req,res){
 
 }
 
-
-var gethaplogroups = function(req,res){
+function gethaplogroups(req,res){
 
       var haplogroup =  _.uniq(_.pluck(sheetDataStore,"haplogroup"));
         res.send({haplogroup:haplogroup});
@@ -111,7 +118,3 @@ async.series([
 
 
 
-module.exports = {
-    "gettree":getCustomTree,
-    "gethaplogroups":gethaplogroups
-}

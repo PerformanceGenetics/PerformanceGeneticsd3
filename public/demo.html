@@ -43,7 +43,10 @@ Haplogroups : <select id="haplogroup"></select>
     d3.json("/gethaplogroups", function(error, data) {
         data.haplogroup.forEach(function(d){
             d3.select("#haplogroup").append("option").text(d);
+
         })
+        getHaploGroupData(data.haplogroup[0]);
+
         d3.select("#haplogroup").on('change',function(){
             var sel = d3.select('#haplogroup').node()
             var selected =sel.options[sel.selectedIndex].value;

@@ -24,6 +24,9 @@
         stroke: #ccc;
         stroke-width: 1.5px;
     }
+    svg{
+        border:1px solid black;
+    }
 
 </style>
 </head>
@@ -51,8 +54,8 @@ Haplogroups : <select id="haplogroup"></select>
 <script>
 
     var margin = {top: 20, right: 120, bottom: 20, left: 120},
-            width = 960 - margin.right - margin.left,
-            height = 800 - margin.top - margin.bottom;
+            width = 600 - margin.right - margin.left,
+            height = 500 - margin.top - margin.bottom;
 
     var i = 0,
             duration = 750,
@@ -105,7 +108,7 @@ Haplogroups : <select id="haplogroup"></select>
 
     function update(source) {
 
-        var spacing = 100;
+        var spacing = 70;
         // Compute the new tree layout.
         var nodes = tree.nodes(root).reverse(),
                 links = tree.links(nodes);
@@ -128,8 +131,16 @@ Haplogroups : <select id="haplogroup"></select>
                 .style("fill", function(d) { return d._children ? "red" : "#fff"; });
 
         nodeEnter.append("text")
-                .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-                .attr("dy", ".35em")
+                .attr("x", function(d) { return d.children || d._children ? 100 : -10; })
+                .attr("dy", function(d){
+                    console.log(d);
+                    if(d.depth%2==0){
+                        return "2em";
+                    }else{
+                        return "-1.35em";
+                    }
+
+                })
                 .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
                 .text(function(d) { return d.name; })
                 .style("fill-opacity", 1e-6);

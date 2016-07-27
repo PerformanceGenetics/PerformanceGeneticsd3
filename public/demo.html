@@ -11,7 +11,7 @@
 
     .node circle {
         fill: #fff;
-        stroke: red;
+        stroke: #666;
         stroke-width: 1.5px;
     }
 
@@ -59,6 +59,8 @@ Haplogroups : <select id="haplogroup"></select>
     var margin = {top: 20, right: 120, bottom: 20, left: 120},
             width = 600 - margin.right - margin.left,
             height = 500 - margin.top - margin.bottom;
+
+    var circleColor ="#ccc";
 
     var i = 0,
             duration = 750,
@@ -116,7 +118,7 @@ Haplogroups : <select id="haplogroup"></select>
 
     function update(source) {
 
-        var spacing = 70;
+        var spacing = 120;
         // Compute the new tree layout.
         var nodes = tree.nodes(root).reverse(),
                 links = tree.links(nodes);
@@ -136,21 +138,22 @@ Haplogroups : <select id="haplogroup"></select>
 
         nodeEnter.append("circle")
                 .attr("r", 1e-6)
-                .style("fill", function(d) { return d._children ? "red" : "#fff"; });
+                .style("fill", function(d) { return d._children ? circleColor : "#fff"; });
 
         nodeEnter.append("text")
-                .attr("x", function(d) { return d.children || d._children ? 100 : -10; })
+                .style("text-anchor","end")
+                .attr("x", function(d) { return d.children || d._children ? -7 : -10; })
                 .attr("dy", function(d){
                     console.log(d);
                     if(d.depth%2==0){
-                        return "2em";
+                        return "0.5em";
                     }else{
-                        return "-1.35em";
+                        return "0em";
                     }
 
                 })
                 .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-                .text(function(d) { return d.name; })
+                .text(function(d) { return d.name.trim(); })
                 .style("fill-opacity", 1e-6);
 
         // Transition nodes to their new position.
@@ -159,8 +162,8 @@ Haplogroups : <select id="haplogroup"></select>
                 .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
         nodeUpdate.select("circle")
-                .attr("r", 10)
-                .style("fill", function(d) { return d._children ? "red" : "#fff"; });
+                .attr("r", 5)
+                .style("fill", function(d) { return d._children ? circleColor : "#fff"; });
 
         nodeUpdate.select("text")
                 .style("fill-opacity", 1);

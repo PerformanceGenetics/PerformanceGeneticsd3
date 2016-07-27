@@ -56,8 +56,12 @@ Haplogroups : <select id="haplogroup"></select>
 </script>
 <script>
 
+    var parent = document.getElementById("tree").parentNode;
+   var parentWidth = parent.offsetWidth;
+    
+
     var margin = {top: 20, right: 120, bottom: 20, left: 120},
-            width = 600 - margin.right - margin.left,
+            width = parentWidth - margin.right - margin.left,
             height = 500 - margin.top - margin.bottom;
 
     var circleColor ="#ccc";
@@ -233,6 +237,22 @@ Haplogroups : <select id="haplogroup"></select>
     function getHaplotypes(json){
 
     }
+
+
+    function debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            var later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            var callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    };
 
 </script>
 </body>

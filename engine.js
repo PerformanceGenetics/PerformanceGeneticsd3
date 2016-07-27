@@ -14,6 +14,7 @@ var GoogleSpreadsheet = require('google-spreadsheet');
 var doc = new GoogleSpreadsheet('1OvqesdGFNMGAnQU12iVX-eq7g3cM_th4zvFhPN4ldvk');
 var sheet,sheetDataStore;
 var props = ["haplogroup","haplotype","lowe","color","childid","name","parentid"];
+var schedule = require('node-schedule');
 
 
 
@@ -74,15 +75,13 @@ var getSheetDataJSON = function(success) {
     })
 }
 
-var getdata = function(req,res){
+var getdata = function(){
 
     console.log("getdata");
 
    var storeJson = function(json){
        sheetDataStore =json;
-       console.log(json);
    };
-
 
     getSheetDataJSON(storeJson);
 
@@ -106,6 +105,10 @@ function gethaplogroups(req,res){
 
 }
 
+
+var j = schedule.scheduleJob('*/5 * * * *', function(){
+    getdata();
+});
 
 async.series([
     function setAuth(step) {

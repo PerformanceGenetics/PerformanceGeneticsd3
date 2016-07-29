@@ -75,9 +75,11 @@
    var parentWidth = parent.offsetWidth;
 
 
-    var margin = {top: 20, right: 120, bottom: 20, left: 120},
+    var margin = {top: 20, right: 120, bottom: 20, left: 180},
             width = parentWidth - margin.right - margin.left,
             height = 500 - margin.top - margin.bottom;
+
+    var X,Y;
 
     var circleColor ="#ccc";
 
@@ -92,11 +94,23 @@
             .projection(function(d) { return [d.y, d.x]; });
 
 
+    var zoom = d3.behavior.zoom();
+    var redraw = function () {
+         X =d3.event.translate[0];
+         Y =d3.event.translate[1];
+        var translate = [X, Y];
+
+
+        console.log("z-p",X,Y,translate,d3.event.scale);
+
+        svg.attr("transform", "translate(" + translate + ")" + " scale(" + d3.event.scale + ")");
+
+    }
+
+
     var svg = d3.select("#tree").append("svg")
-            .call(d3.behavior.zoom().on("zoom", function () {
-                var translate = [d3.event.translate[0] + margin.left, d3.event.translate[1] + margin.top];
-                svg.attr("transform", "translate(" + translate + ")" + " scale(" + d3.event.scale + ")")
-            }))
+            .call(zoom.on("zoom", redraw
+            ))
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -111,6 +125,12 @@
        d3.json("/gettree/"+hgrp, function(error, flare) {
            if (error) throw error;
            createTree(flare);
+
+           var translate = [margin.left,  margin.top];
+           zoom.translate(translate);
+           zoom.scale(1);
+           svg.attr("transform", "translate(" + translate + ")" + " scale(" + 1 + ")");
+           console.log("selected",translate);
 
        });
    }

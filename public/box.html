@@ -55,7 +55,7 @@
     var parentWidth = parent.offsetWidth;
     var margin = {top: 30, right: 50, bottom: 70, left: 50};
     var  width = parentWidth - margin.left - margin.right;
-    var height = 400 - margin.top - margin.bottom;
+    var height = 500 - margin.top - margin.bottom;
 
     var min = Infinity,
             max = -Infinity;
@@ -153,7 +153,7 @@
                 .attr("text-anchor", "middle")
                 .style("font-size", "18px")
             //.style("text-decoration", "underline")
-                .text("G1 Winners");
+                .text("Worldwide G1 winners by Haplotype (2005-2015)");
 
         // draw y axis
         svg.append("g")
@@ -170,11 +170,11 @@
         // draw x axis
         svg.append("g")
                 .attr("class", "x axis")
-                .attr("transform", "translate(0," + (height  + margin.top + 10) + ")")
+                .attr("transform", "translate(0," + (height  + margin.top) + ")")
                 .call(xAxis)
                 .append("text")             // text label for the x axis
                 .attr("x", (width / 2) )
-                .attr("y",  10 )
+                .attr("y",  25 )
                 .attr("dy", ".71em")
                 .style("text-anchor", "middle")
                 .style("font-size", "16px")

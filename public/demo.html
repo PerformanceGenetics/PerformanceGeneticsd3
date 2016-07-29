@@ -27,13 +27,29 @@
     svg{
         border:1px solid black;
     }
+    #tree{
+        float:left;
+        width:75%;
+        border:1px solid green;
+
+    }
+    #haplotext{
+        float:left;
+        width:25%;
+        border:1px solid red;
+
+    }
 
 </style>
 </head>
 <body>
-Haplogroups : <select id="haplogroup"></select>
+<div>Haplogroups : <select id="haplogroup"></select>
+</div>
+<div>
 <div id="tree">
 
+</div>
+<div id="haplotext"></div>
 </div>
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script>
@@ -56,9 +72,9 @@ Haplogroups : <select id="haplogroup"></select>
 </script>
 <script>
 
-    var parent = document.getElementById("tree").parentNode;
+    var parent = document.getElementById("tree");
    var parentWidth = parent.offsetWidth;
-    
+
 
     var margin = {top: 20, right: 120, bottom: 20, left: 120},
             width = parentWidth - margin.right - margin.left,
@@ -88,6 +104,9 @@ Haplogroups : <select id="haplogroup"></select>
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.select(self.frameElement).style("height", "800px");
+
+
+
 
    function getHaploGroupData(hgrp){
        d3.json("/gettree/"+hgrp, function(error, flare) {
@@ -128,46 +147,63 @@ Haplogroups : <select id="haplogroup"></select>
                 links = tree.links(nodes);
 
         // Normalize for fixed-depth.
-        nodes.forEach(function(d) { d.y = d.depth * spacing; });
+        nodes.forEach(function (d) {
+            d.y = d.depth * spacing;
+        });
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
-                .data(nodes, function(d) { return d.id || (d.id = ++i); });
+                .data(nodes, function (d) {
+                    return d.id || (d.id = ++i);
+                });
 
         // Enter any new nodes at the parent's previous position.
         var nodeEnter = node.enter().append("g")
                 .attr("class", "node")
-                .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+                .attr("transform", function (d) {
+                    return "translate(" + source.y0 + "," + source.x0 + ")";
+                })
                 .on("click", click);
 
         nodeEnter.append("circle")
                 .attr("r", 1e-6)
-                .style("fill", function(d) { return d._children ? circleColor : "#fff"; });
+                .style("fill", function (d) {
+                    return d._children ? circleColor : "#fff";
+                });
 
         nodeEnter.append("text")
-                .style("text-anchor","end")
-                .attr("x", function(d) { return d.children || d._children ? -7 : -10; })
-                .attr("dy", function(d){
-                    console.log(d);
-                    if(d.depth%2==0){
+                .style("text-anchor", "end")
+                .attr("x", function (d) {
+                    return d.children || d._children ? -7 : -10;
+                })
+                .attr("dy", function (d) {
+                    if (d.depth % 2 == 0) {
                         return "0.5em";
-                    }else{
+                    } else {
                         return "0em";
                     }
 
                 })
-                .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-                .text(function(d) { return d.name.trim(); })
+                .attr("text-anchor", function (d) {
+                    return d.children || d._children ? "end" : "start";
+                })
+                .text(function (d) {
+                    return d.name.trim();
+                })
                 .style("fill-opacity", 1e-6);
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
                 .duration(duration)
-                .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+                .attr("transform", function (d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                });
 
         nodeUpdate.select("circle")
                 .attr("r", 5)
-                .style("fill", function(d) { return d._children ? circleColor : "#fff"; });
+                .style("fill", function (d) {
+                    return d._children ? circleColor : "#fff";
+                });
 
         nodeUpdate.select("text")
                 .style("fill-opacity", 1);
@@ -175,7 +211,9 @@ Haplogroups : <select id="haplogroup"></select>
         // Transition exiting nodes to the parent's new position.
         var nodeExit = node.exit().transition()
                 .duration(duration)
-                .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+                .attr("transform", function (d) {
+                    return "translate(" + source.y + "," + source.x + ")";
+                })
                 .remove();
 
         nodeExit.select("circle")
@@ -186,16 +224,17 @@ Haplogroups : <select id="haplogroup"></select>
 
         // Update the links…
         var link = svg.selectAll("path.link")
-                .data(links, function(d) { return d.target.id; });
+                .data(links, function (d) {
+                    return d.target.id;
+                });
 
         // Enter any new links at the parent's previous position.
         link.enter().insert("path", "g")
                 .attr("class", "link")
-                .style("stroke", function(d){
-                    console.log(d);
+                .style("stroke", function (d) {
                     return d.target.color;
                 })
-                .attr("d", function(d) {
+                .attr("d", function (d) {
                     var o = {x: source.x0, y: source.y0};
                     return diagonal({source: o, target: o});
                 });
@@ -208,18 +247,24 @@ Haplogroups : <select id="haplogroup"></select>
         // Transition exiting nodes to the parent's new position.
         link.exit().transition()
                 .duration(duration)
-                .attr("d", function(d) {
+                .attr("d", function (d) {
                     var o = {x: source.x, y: source.y};
                     return diagonal({source: o, target: o});
                 })
                 .remove();
 
         // Stash the old positions for transition.
-        nodes.forEach(function(d) {
+        nodes.forEach(function (d) {
             d.x0 = d.x;
             d.y0 = d.y;
         });
+
+
+        var html = "<h3>Haplogroup "+root.haplogroup +"</h3><p>"+root.description+"</p>"
+        var div = d3.select("#haplotext")
+                .html(html);
     }
+
 
     // Toggle children on click.
     function click(d) {
@@ -255,5 +300,7 @@ Haplogroups : <select id="haplogroup"></select>
     };
 
 </script>
+
+
 </body>
 </html>

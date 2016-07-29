@@ -9,6 +9,7 @@ app.get("/gettree/:group", engine.gettree);
 
 app.get("/gethaplogroups",engine.gethaplogroups);
 
+app.get("/getwinners",engine.getwinners);
 
 app.listen(PORT,function(){
 

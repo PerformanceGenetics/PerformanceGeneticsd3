@@ -5,15 +5,22 @@
 
 module.exports = {
     "gettree":getCustomTree,
-    "gethaplogroups":gethaplogroups
+    "gethaplogroups":gethaplogroups,
+    "getwinners":getwinners
 }
 
 var async = require('async');
 var _ = require("underscore");
 var GoogleSpreadsheet = require('google-spreadsheet');
 var doc = new GoogleSpreadsheet('1OvqesdGFNMGAnQU12iVX-eq7g3cM_th4zvFhPN4ldvk');
-var sheet,sheetDataStore;
-var props = ["haplogroup","haplotype","lowe","color","childid","name","parentid","description"];
+var sheet,sheetDataStore,sheetDataStore2;
+var worksheets = [
+    {title:"haplogroup",
+    cols:["haplogroup","haplotype","lowe","color","childid","name","parentid","description"]
+    },
+    {title:"winners",
+        cols:["distance","haplotype"]
+    }];
 var schedule = require('node-schedule');
 
 
@@ -48,7 +55,7 @@ var createTrees = function(json){
     return parent;
 }
 
-var getSheetDataJSON = function(success) {
+var getSheetDataJSON = function(success,sheetTitle) {
     async.waterfall([function (cb) {
         doc.getInfo(function (err, info) {
             cb(null, info);
@@ -56,12 +63,17 @@ var getSheetDataJSON = function(success) {
     }
         ,
         function (info, cb) {
-            var jsonData = []
-            var sheet = info.worksheets[0];
+            var jsonData = [];
+            var sheet =  _.find(info.worksheets,function(w){
+                return w.title == sheetTitle;
+            });
+            var localsheet =  _.find(worksheets,function(w){
+                return w.title == sheetTitle;
+            });
             sheet.getRows(function (err, rows) {
 
                 _.each(rows, function (row) {
-                    jsonData.push(_.pick(row, props));
+                    jsonData.push(_.pick(row, localsheet.cols));
                 });
                 cb(null, jsonData);
 
@@ -82,10 +94,16 @@ var getdata = function(){
    var storeJson = function(json){
        sheetDataStore =json;
    };
+    var storeJson2 = function(json){
+        sheetDataStore2 =json;
+    };
 
-    getSheetDataJSON(storeJson);
+    getSheetDataJSON(storeJson,worksheets[0].title);
+
+    getSheetDataJSON(storeJson2,worksheets[1].title);
 
 }
+
 
 
 function getCustomTree(req,res){
@@ -109,6 +127,40 @@ function gethaplogroups(req,res){
 var j = schedule.scheduleJob('*/5 * * * *', function(){
     getdata();
 });
+
+
+
+function getwinners(req,res){
+
+    var haplotypes = _.groupBy(sheetDataStore2,"haplotype");
+
+    var types = _.uniq(_.pluck(sheetDataStore2,"haplotype"));
+
+    var max = _.max(haplotypes,function(h){
+        return h.length;
+    })
+
+
+    var output = []
+    for(i=0;i<max.length;i++){
+        var obj ={}
+        _.each(types,function(type){
+            if(haplotypes[type][i]) {
+                obj[type] = haplotypes[type][i]["distance"]
+            }
+            else{
+                obj[type] =0;
+            }
+        })
+        output.push(obj);
+
+    }
+   res.send(output);
+
+
+
+}
+
 
 async.series([
     function setAuth(step) {

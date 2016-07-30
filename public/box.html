@@ -64,6 +64,7 @@
     d3.json("/getwinners", function(error, csv) {
 
         var data = [];
+        var colors = csv.pop();
 
        var cols = d3.keys(csv[0]);
 
@@ -79,6 +80,7 @@
             for(var i=0;i<cols.length;i++){
                   if(parseInt(x[cols[i]])){
                       data[i][1].push(parseInt(x[cols[i]]));
+                      data[i][2] = colors[cols[i]];
                   }
             }
 
@@ -97,7 +99,6 @@
 
             rowMin = isNaN(rowMin) ? 0:rowMin
 
-            console.log(rowMax,rowMin)
 
 
 
@@ -122,12 +123,18 @@
 
         // the x-axis
         var x = d3.scale.ordinal()
-                .domain( data.map(function(d) { console.log(d); return d[0] } ) )
+                .domain( data.map(function(d) {
+
+                   return d[0];
+                } ) )
                 .rangeRoundBands([0 , width], 0.7, 0.3);
 
         var xAxis = d3.svg.axis()
                 .scale(x)
-                .orient("bottom");
+                .orient("bottom")
+                .tickFormat(function(d,i){
+                    return data[i][0]+" ("+data[i][1].length+")";
+                });
 
         // the y-axis
         var y = d3.scale.linear()
@@ -162,7 +169,8 @@
                 .append("text") // and text1
                 .attr("transform", "rotate(-90)")
                 .attr("y", 6)
-                .attr("dy", ".71em")
+                .attr("x",-50)
+                .attr("dy", "1em")
                 .style("text-anchor", "end")
                 .style("font-size", "16px")
                 .text("Distance");
@@ -173,7 +181,7 @@
                 .attr("transform", "translate(0," + (height  + margin.top) + ")")
                 .call(xAxis)
                 .append("text")             // text label for the x axis
-                .attr("x", (width / 2) )
+                .attr("x", (width/2) )
                 .attr("y",  25 )
                 .attr("dy", ".71em")
                 .style("text-anchor", "middle")

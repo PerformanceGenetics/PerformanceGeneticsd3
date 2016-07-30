@@ -23,6 +23,7 @@
                 //d = d.map(value).sort(d3.ascending);
                 //var boxIndex = data[0];
                 //var boxIndex = 1;
+                //console.log(data);
                 var d = data[1].sort(d3.ascending);
 
                 // console.log(boxIndex);
@@ -35,6 +36,8 @@
 
                 // Compute quartiles. Must return exactly 3 elements.
                 var quartileData = d.quartiles = quartiles(d);
+                console.log(data[2])
+                quartileData.push(data[2])
 
                 // Compute whiskers. Must return exactly 2 elements, or null.
                 var whiskerIndices = whiskers && whiskers.call(this, d, i),
@@ -106,10 +109,14 @@
                     .attr("y", function(d) { return x0(d[2]); })
                     .attr("width", width)
                     .attr("height", function(d) { return x0(d[0]) - x0(d[2]); })
-                    .transition()
+                    .style("fill",function(d){
+                        return d[3]})
+                .transition()
                     .duration(duration)
                     .attr("y", function(d) { return x1(d[2]); })
-                    .attr("height", function(d) { return x1(d[0]) - x1(d[2]); });
+                    .attr("height", function(d) { return x1(d[0]) - x1(d[2]); })
+
+                quartileData.pop();
 
                 box.transition()
                     .duration(duration)

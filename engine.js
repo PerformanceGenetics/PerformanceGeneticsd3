@@ -19,7 +19,7 @@ var worksheets = [
     cols:["haplogroup","haplotype","lowe","color","childid","name","parentid","description"]
     },
     {title:"winners",
-        cols:["distance","haplotype"]
+        cols:["distance","haplotype","colour"]
     }];
 var schedule = require('node-schedule');
 
@@ -142,6 +142,7 @@ function getwinners(req,res){
 
 
     var output = []
+    var i;
     for(i=0;i<max.length;i++){
         var obj ={}
         _.each(types,function(type){
@@ -155,6 +156,19 @@ function getwinners(req,res){
         output.push(obj);
 
     }
+   var obj ={};
+
+    _.each(types,function(type){
+        if(haplotypes[type][0]) {
+            obj[type] = haplotypes[type][0]["colour"]
+        }
+        else{
+            obj[type] =0;
+        }
+
+    })
+    output.push(obj);
+
    res.send(output);
 
 

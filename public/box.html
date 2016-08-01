@@ -10,6 +10,7 @@
         font: 10px sans-serif;
     }
 
+
     .box line,
     .box rect,
     .box circle {
@@ -29,6 +30,12 @@
 
     .axis {
         font: 12px sans-serif;
+    }
+    line.dots{
+        stroke-width:1;
+        stroke-linecap:"round";
+        stroke-dasharray:4, 4;
+        stroke:#aaa;
     }
 
     .axis path,
@@ -65,6 +72,7 @@
 
         var data = [];
         var colors = csv.pop();
+        var avgCollection =[];
 
        var cols = d3.keys(csv[0]);
 
@@ -81,6 +89,7 @@
                   if(parseInt(x[cols[i]])){
                       data[i][1].push(parseInt(x[cols[i]]));
                       data[i][2] = colors[cols[i]];
+                      avgCollection.push(parseInt(x[cols[i]]))
                   }
             }
 
@@ -121,6 +130,9 @@
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
+
+
         // the x-axis
         var x = d3.scale.ordinal()
                 .domain( data.map(function(d) {
@@ -136,6 +148,7 @@
                     return data[i][0]+" ("+data[i][1].length+")";
                 });
 
+
         // the y-axis
         var y = d3.scale.linear()
                 .domain([min, max])
@@ -144,6 +157,25 @@
         var yAxis = d3.svg.axis()
                 .scale(y)
                 .orient("left");
+
+
+        // average calculation
+        var avg = _.reduce(avgCollection, function(memo, num){ return memo + num; }, 0)/avgCollection.length;
+        console.log(avg);
+        var avgLineHeight = height-((avg*height/(max-min))) +margin.top;
+
+        //average line
+
+
+        svg.append("line")
+                .attr("class","dots")
+                .attr("x1", 0)
+                .attr("y1", avgLineHeight)
+                .attr("x2", width)
+                .attr("y2", avgLineHeight)
+                .attr("stroke-width", 2)
+                .attr("stroke", "black");
+
 
         // draw the boxplots
         svg.selectAll(".box")

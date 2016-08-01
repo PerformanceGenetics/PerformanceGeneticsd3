@@ -36,7 +36,6 @@
 
                 // Compute quartiles. Must return exactly 3 elements.
                 var quartileData = d.quartiles = quartiles(d);
-                console.log(data[2])
                 quartileData.push(data[2])
 
                 // Compute whiskers. Must return exactly 2 elements, or null.
@@ -209,10 +208,10 @@
                     boxTick.enter().append("text")
                         .attr("class", "box")
                         .attr("dy", ".3em")
-                        .attr("dx", function(d, i) { return i & 1 ? 6 : -6 })
-                        .attr("x", function(d, i) { return i & 1 ?  + width : 0 })
+                        .attr("dx", function(d, i) { return i & 1 ? -6 : -6 })
+                        .attr("x", function(d, i) { return i & 1 ?  + 0 : 0 })
                         .attr("y", x0)
-                        .attr("text-anchor", function(d, i) { return i & 1 ? "start" : "end"; })
+                        .attr("text-anchor", function(d, i) { return i & 1 ? "end" : "end"; })
                         .text(format)
                         .transition()
                         .duration(duration)
@@ -232,12 +231,13 @@
                 if(showLabels == true) {
                     whiskerTick.enter().append("text")
                         .attr("class", "whisker")
-                        .attr("dy", ".3em")
-                        .attr("dx", 6)
-                        .attr("x", width)
+                        .attr("dy", function(d,i){return i%2==0? "1em":"-0.5em"})
+                        .attr("dx", 0)
+                        .attr("x", width/2)
                         .attr("y", x0)
                         .text(format)
                         .style("opacity", 1e-6)
+                        .attr("text-anchor", "middle")
                         .transition()
                         .duration(duration)
                         .attr("y", x1)
